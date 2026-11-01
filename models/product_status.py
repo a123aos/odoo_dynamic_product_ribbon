@@ -59,14 +59,6 @@ SCHEMA_AVAILABILITY = {
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
-    schema_product_group_id = fields.Char(
-        related="product_tmpl_id.schema_product_group_id",
-        string="Product Group ID (shared)",
-        readonly=False,
-        help="Shared parent identifier for all variants of this product. "
-             "Changing it here updates the product template and all variants.",
-    )
-
     def _to_markup_data(self, website):
         """Keep Product JSON-LD availability in sync with the displayed ribbon."""
         self.ensure_one()
