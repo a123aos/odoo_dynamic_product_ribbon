@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="product_variant_easy_edit_view_group_id" model="ir.ui.view">
-        <field name="name">product.product.form.easy.product.group.id</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+    <record id="product_template_view_form_group_id" model="ir.ui.view">
+        <field name="name">product.template.form.product.group.id</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='codes']/field[@name='default_code']" position="after">
+            <xpath expr="//field[@name='default_code']" position="after">
                 <field name="schema_product_group_id"
-                       string="Product Group ID (shared)"
+                       string="Product Group ID"
                        placeholder="KF1-NH-MR"/>
             </xpath>
         </field>
