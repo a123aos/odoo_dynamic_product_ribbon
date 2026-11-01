@@ -85,3 +85,25 @@ class ProductProduct(models.Model):
 
         return markup_data
 
+class ProductTemplate(models.Model):
+    _inherit = "product.template"
+
+    schema_product_group_id = fields.Char(
+        string="Product Group ID",
+        copy=False,
+        help="Stable parent identifier for ProductGroup structured data. "
+             "Keep this value unique for each product group.",
+    )
+
+    def _to_markup_data(self, website):
+        """Add the configured parent identifier to ProductGroup JSON-LD."""
+        self.ensure_one()
+        markup_data = super()._to_markup_data(website)
+
+        if markup_data.get("@type") == "ProductGroup":
+            group_id = (self.schema_product_group_id or "").strip()
+            if group_id:
+                markup_data["productGroupID"] = group_id
+
+        return markup_data
+
