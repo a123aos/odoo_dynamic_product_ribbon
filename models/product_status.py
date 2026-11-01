@@ -67,10 +67,20 @@ class ProductProduct(models.Model):
         # Use the same ribbon resolution as the website product page:
         # variant ribbon, template ribbon, then automatically assigned ribbon.
         ribbon = self.product_tmpl_id._get_ribbon(variant=self)
-        availability = SCHEMA_AVAILABILITY.get(ribbon.assign)
-
         offers = markup_data.get("offers")
-        if availability and isinstance(offers, dict):
+        if not isinstance(offers, dict):
+            return markup_data
+
+        # A manually assigned "Coming Soon" ribbon means the product is not
+        # open for ordering yet. Do not claim that it is in stock or available
+        # for pre-order in structured data.
+        ribbon_name = (ribbon.name or "").strip().casefold().replace("-", " ").replace("_", " ")
+        if ribbon.assign == "manual" and ribbon_name == "coming soon":
+            offers.pop("availability", None)
+            return markup_data
+
+        availability = SCHEMA_AVAILABILITY.get(ribbon.assign)
+        if availability:
             offers["availability"] = availability
 
         return markup_data
