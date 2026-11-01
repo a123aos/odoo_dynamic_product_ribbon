@@ -48,3 +48,30 @@ class ProductRibbon(models.Model):
             )
 
         return False
+
+SCHEMA_AVAILABILITY = {
+    "available": "https://schema.org/InStock",
+    "pre_order": "https://schema.org/PreOrder",
+    "sold_out": "https://schema.org/OutOfStock",
+}
+
+
+class ProductProduct(models.Model):
+    _inherit = "product.product"
+
+    def _to_markup_data(self, website):
+        """Keep Product JSON-LD availability in sync with the displayed ribbon."""
+        self.ensure_one()
+        markup_data = super()._to_markup_data(website)
+
+        # Use the same ribbon resolution as the website product page:
+        # variant ribbon, template ribbon, then automatically assigned ribbon.
+        ribbon = self.product_tmpl_id._get_ribbon(variant=self)
+        availability = SCHEMA_AVAILABILITY.get(ribbon.assign)
+
+        offers = markup_data.get("offers")
+        if availability and isinstance(offers, dict):
+            offers["availability"] = availability
+
+        return markup_data
+
